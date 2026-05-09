@@ -38,7 +38,7 @@ with tab1:
                 """
                 chat_completion = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
-                    model="llama-3.3-70b-versatile",
+                    model="llama-3.3-70b-8192",
                     temperature=0.7,
                 )
                 st.success("Message prêt à copier-coller :")
