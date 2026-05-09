@@ -16,26 +16,25 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "📊 Dashboard"
 ])
 
-# MODULE 1: MESSAGE PERSO - Ton module actuel amélioré
+# MODULE 1: MESSAGE PERSO
 with tab1:
     st.subheader("Génère un message LinkedIn ultra-ciblé")
     profil = st.text_area("Colle le profil LinkedIn brut du prospect",
-                          placeholder="Ex: Patrick Mukendi, CEO de Kivu Digital, 12 employés, Bukavu...")
+                          height=150,
+                          placeholder="Ex: Patrick Mukendi, CEO de Kivu Digital, 12 employés, Bukavu. Site web 2018, pas responsive...")
 
     if st.button("Générer message perso", type="primary"):
         if profil:
-            with st.spinner("ASYMAS rédige..."):
+            with st.spinner("ASYMAS rédige le message parfait..."):
                 prompt = f"""
                 Tu es un commercial expert de ASYMAS BUSINESS à Bukavu.
                 Rédige un message LinkedIn de prospection court, direct, 0 blabla.
-                Structure:
-                1. Hook personnalisé basé sur le profil
+                Structure obligatoire:
+                1. Hook personnalisé basé sur: {profil}
                 2. Preuve sociale chiffrée à Bukavu/Goma
-                3. CTA pour un call de 15min avec 2 dates précises
+                3. CTA pour un call de 15min avec 2 dates précises cette semaine
 
-                Profil: {profil}
-
-                Style: Tutoiement, phrases courtes. Max 80 mots.
+                Style: Tutoiement, phrases courtes. Max 80 mots. Interdit: [problème détecté], remplace par le vrai problème.
                 """
                 chat_completion = client.chat.completions.create(
                     messages=[{"role": "user", "content": prompt}],
@@ -43,24 +42,26 @@ with tab1:
                     temperature=0.7,
                 )
                 st.success("Message prêt à copier-coller :")
-                st.write(chat_completion.choices[0].message.content)
+                st.code(chat_completion.choices[0].message.content, language=None)
         else:
             st.warning("Colle un profil d'abord")
 
 # MODULE 2: PROSPECTION AUTO
 with tab2:
     st.subheader("Trouve des prospects chauds avec l'IA")
-    secteur = st.text_input("Secteur d'activité", "Agences digitales")
-    ville = st.text_input("Ville", "Bukavu")
-    nombre = st.slider("Nombre de prospects", 1, 10, 3)
+    col1, col2 = st.columns(2)
+    with col1:
+        secteur = st.text_input("Secteur d'activité", "Agences digitales")
+        ville = st.text_input("Ville", "Bukavu")
+    with col2:
+        nombre = st.slider("Nombre de prospects", 1, 10, 3)
 
     if st.button("Lancer la prospection IA", type="primary"):
-        with st.spinner(f"ASYMAS scanne LinkedIn pour {secteur} à {ville}..."):
+        with st.spinner(f"ASYMAS scanne {secteur} à {ville}..."):
             prompt = f"""
-            Génère une liste de {nombre} prospects fictifs mais réalistes pour {secteur} à {ville}.
-            Pour chaque prospect donne: Nom Prénom, Poste, Entreprise, Pain point détecté,
-            Angle d'attaque pour vendre un site web/CRM.
-            Format: Tableau markdown.
+            Génère une liste de {nombre} prospects fictifs mais réalistes pour {secteur} à {ville}, RDC.
+            Pour chaque prospect donne: Nom Prénom | Poste | Entreprise | Pain point détecté | Angle d'attaque ASYMAS
+            Format: Tableau markdown uniquement. Pas de texte avant/après.
             """
             chat_completion = client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
@@ -78,10 +79,10 @@ with tab3:
     if st.button("Générer le planning", type="primary"):
         with st.spinner("ASYMAS planifie la séquence..."):
             prompt = f"""
-            Tu es expert en closing. Crée un planning de relance email/LinkedIn sur {duree}.
+            Tu es expert en closing B2B. Crée un planning de relance email/LinkedIn sur {duree}.
             Contexte: {contexte}
-            Donne pour chaque relance: Jour, Canal, Objet, Corps du message <50 mots, Objectif psy.
-            Format: Tableau markdown. Ton: Direct, sans pression.
+            Pour chaque relance donne: Jour | Canal | Objet | Corps du message <50 mots | Objectif psychologique
+            Format: Tableau markdown. Ton: Direct, valeur, sans pression. 3 à 5 relances max.
             """
             chat_completion = client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
@@ -92,13 +93,13 @@ with tab3:
 # MODULE 4: DASHBOARD
 with tab4:
     st.subheader("Dashboard ASYMAS")
-    st.info("Module en cours. Prochaine V2: Connexion Supabase pour sauver tes prospects.")
+    st.info("V2 à venir: Connexion Supabase pour sauvegarder tes prospects et tracker les réponses.")
     col1, col2, col3 = st.columns(3)
     col1.metric("Messages générés", "1", "+1")
     col2.metric("Prospects trouvés", "0", "")
     col3.metric("Taux de réponse", "N/A", "")
 
     if st.secrets["WA_PHONE_ID"] == "non_configuré":
-        st.warning("WhatsApp non configuré. Module désactivé.")
+        st.warning("WhatsApp Business API non configuré. Module désactivé.")
     else:
-        st.success("WhatsApp API: Connecté")
+        st.success("WhatsApp API: Connecté ✅")
